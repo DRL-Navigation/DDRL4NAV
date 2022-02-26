@@ -24,7 +24,7 @@ sudo mkdir -p  /home/${USER}/drlnav_frame
 **if you have not installed redis-6.x yet,  please type the following command in your terminal** 
 
 ```
-https://download.redis.io/releases/redis-6.2.6.tar.gz
+wget https://download.redis.io/releases/redis-6.2.6.tar.gz
 sudo tar -xzvf redis/redis-6.2.6.tar.gz -C /usr/local/
 sudo ln -s /usr/local/redis-6.2.6/src/redis-server /usr/bin/redis-server
 sudo apt install redis-tools
