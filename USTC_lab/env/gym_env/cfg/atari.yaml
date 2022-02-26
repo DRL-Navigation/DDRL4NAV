@@ -1,0 +1,58 @@
+###########################################
+# static params setting
+###########################################
+test: False
+env_type: 'gym'
+env_num: 4
+agent_num_per_env: 1
+batch_num_per_env: 1
+env_id: 0 # if you set env_num > 1, you should increase env_id when creating envs.
+
+# putting game name in env_name
+env_name: 'PongDeterministic-v4'
+cfg_name: 'PongDeterministic-v4'
+cfg_type: 'yaml'
+
+time_max: 128
+image_batch: 1
+state_dtype: "np.uint8"
+
+
+##########################################
+# wrapper setting
+# NOTE: wrapper sequentially ！！！
+# for excemple,
+# wrapper: [A, B] means :
+#     env = B(A(env))
+###########################################
+
+# skip some step
+int_skip: 4 # if you want to use skip wrapper, put "MaxAndSkipEnv" in following
+# multi frame stack
+int_frame_stack: 4
+# lives setting
+int_lives: 0 # if you want to use lives wrapper, put "WarpEpisodeLife" in following.
+
+# reward setting
+reward_dtype: "np.float32"
+bool_reward_clip: false
+float_min_reward: -1.0
+float_max_reward: 1.0
+float_die_reward: 0.0 # additional die reward
+
+show_gui: True
+
+
+wrapper: [
+  "WrapAction",
+  'WarpDone',
+  'WarpReward',
+  'DisplayWrapper',
+  #  'TimeLimitWrapper',
+  'InfoExpandWrapper',
+  'WarpFrameWrapper',
+  'FrameStackWrapper',
+  'FilterStatesWrapper',
+  "NeverStopWrapper", # 训练时候，不停的跑，这个要放在最后，因为reset对你之前的状态进行了修改
+
+]

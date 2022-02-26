@@ -1,0 +1,7 @@
+gym[atari]
+gym[accept-rom-license]
+numpy
+imageio
+tensorboard
+multiprocess
+pyglet
