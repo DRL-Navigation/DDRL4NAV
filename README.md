@@ -24,45 +24,15 @@ sudo mkdir -p  /home/${USER}/drlnav_frame
 **if you have not installed redis-6.x yet,  please type the following command in your terminal** 
 
 ```
-cd /home/${USER}/drlnav_frame
-git clone git@git.ustc.edu.cn:drl_navigation/drlnav_frame-tools.git
-cd drlnav_frame-tools
-sudo tar -xzvf redis/redis-6.2.1.tar.gz -C /usr/local/
-sudo ln -s /usr/local/redis-6.2.1/src/redis-server /usr/bin/redis-server
+https://download.redis.io/releases/redis-6.2.6.tar.gz
+sudo tar -xzvf redis/redis-6.2.6.tar.gz -C /usr/local/
+sudo ln -s /usr/local/redis-6.2.6/src/redis-server /usr/bin/redis-server
 sudo apt install redis-tools
 ```
 
 #### Python3.8
+make sure your python version >= 3.8. (ubuntu20.04 bring it already)
 
-**if you have not installed python3.7+ yet,  please type the following command in your terminal**
-
-**Otherwise, goto the third command directly**
-
-**first**: we need to fix the **_ctype** error for python3.7 +
-
-ubuntu:
-
-```py
-sudo apt-get install libffi-dev
-```
-
-centos
-
-```py
-yum install libffi-devel
-```
-if you are in ubuntu20.04, pass second.
-
-**second** :configure python3.8
-
-```
-cd drlnav_frame-tools
-sudo tar -xzvf python3/Python-3.8.4.tgz -C /usr/local/
-cd /usr/local/Python-3.8.4
-./configure
-make -j4
-sudo make install
-```
 
 **third**: create venv
 
@@ -109,7 +79,7 @@ now , the whole project dir tree like this:
 supposed you are in /home/${USER}/drlnav_frame dir
 
 ```
-git clone git@git.ustc.edu.cn:drl_navigation/drlnav_frame.git --recurse-submodules
+git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
 ```
 
 now , the whole project dir tree like this:
@@ -152,7 +122,7 @@ stop training
 # warmly stop
 bash stop.sh
 # or you can just kill them
-bash kill_all.sh
+ps -ef|grep main.py|grep -v grep|awk '{print $2}'|xargs kill -9
 ```
 ### Connection between Env and Net
 For training a neural network, you have to pick some kinds of states which observed by your env.
@@ -162,6 +132,7 @@ Actor and Critic later.
 
 
 ### Distributed Training Start
+Make a Jump Server first.
 
 **first**: connect to [Jump Server](https://zh.wikipedia.org/wiki/%E8%B7%B3%E6%9D%BF%E6%9C%BA)
 
@@ -174,8 +145,8 @@ Actor and Critic later.
 you should have modify personal branch **in your working machine**
 
 ```
-git clone git@git.ustc.edu.cn:drl_navigation/drlnav_frame.git
-git checkout -b qiuqc
+git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
+git checkout -b XXX
 
 deploy config.sh
 
@@ -183,7 +154,7 @@ modify sh/machines/all.sh
 
 modify sh/envs/XX.sh  # XX.sh setting in sh/config.sh
 
-git push origin qiuqc:qiuqc
+git push origin XXX:XXX
 ```
 
 **In Jump Server**
