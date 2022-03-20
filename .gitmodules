@@ -1,0 +1,3 @@
+[submodule "USTC_lab/env/img_env"]
+	path = USTC_lab/env/img_env
+	url = https://github.com/DRL-Navigation/img_env

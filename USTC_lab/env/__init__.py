@@ -3,15 +3,14 @@
 # @Author  : qiuqc@mail.ustc.edu.cn
 # @FileName: __init__.py
 
-# todo tornado python2 输入 action 输出 obs，reward，done
 # todo 服务在docker运行
 # todo 几个env 就开几个docker container
 import sys
-sys.path.append('drlnav_env')
+sys.path.append('img_env')
 from USTC_lab.env.vec_env import VecEnv, make_vecenv
 from USTC_lab.env.gym_env import make_gymenv
 try:
-    from USTC_lab.env.drlnav_env.envs import make_env as make_robotnavenv
+    from USTC_lab.env.img_env.envs import make_env as make_robotnavenv
 except Exception as e:
     print(str(e))
     print("Guess you are not clone repo with ----recurse-submodules,"
