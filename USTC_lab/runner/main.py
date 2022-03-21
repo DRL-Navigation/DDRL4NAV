@@ -32,8 +32,8 @@ parser.add_argument("--task", default="BreakoutDeterministic-v4_test", help="tas
 parse = parser.parse_args()
 # 这两行是为了处理导入包的路径
 import sys
-sys.path.append(parse.path + "/drlnav_frame/")
-sys.path.append(parse.path + "/drlnav_frame/USTC_lab/env/drlnav_env")
+sys.path.append(parse.path + "/DDRL4NAV/")
+sys.path.append(parse.path + "/DDRL4NAV/USTC_lab/env/img_env")
 
 from redis import Redis
 

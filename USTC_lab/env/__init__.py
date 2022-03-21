@@ -5,10 +5,12 @@
 
 # todo 服务在docker运行
 # todo 几个env 就开几个docker container
-import sys
-sys.path.append('img_env')
+
+
 from USTC_lab.env.vec_env import VecEnv, make_vecenv
 from USTC_lab.env.gym_env import make_gymenv
+
+from USTC_lab.env.img_env.envs import make_env as make_robotnavenv
 try:
     from USTC_lab.env.img_env.envs import make_env as make_robotnavenv
 except Exception as e:

@@ -105,7 +105,7 @@ bash start.sh config/config.sh
 open tensorboard page :
 
 ```
-bash tfboard.sh 
+bash tfboard.sh config/config.sh
 ```
 
 stop training
