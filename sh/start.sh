@@ -2,17 +2,17 @@
 
 
 
-source config.sh
+source "$1"
 
 source ${MACHINE_FILE}
 source ${REDIS_FILE}
-if [ "$1" == "remote" ];
+if [ "$2" == "remote" ];
 then
     root_dir="/home/drl/${USER}/"
 else
     root_dir="`pwd`/../../"
 fi
-run_file="${root_dir}/drlnav_frame/USTC_lab/runner/main.py"
+run_file="${root_dir}/DDRL4NAV/USTC_lab/runner/main.py"
 pid_dir="${root_dir}${OUTPUT_DIR}${TASK_NAME}/pid/"
 log_dir="${root_dir}${OUTPUT_DIR}${TASK_NAME}/log/"
 model_dir="${root_dir}${OUTPUT_DIR}${TASK_NAME}/model/"

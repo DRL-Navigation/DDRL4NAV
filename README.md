@@ -16,7 +16,7 @@ initialize your working directory in the beginning
 
 ```
 chsh -s /bin/bash    # make sure you are in a bash-based terminal
-sudo mkdir -p  /home/${USER}/drlnav_frame
+sudo mkdir -p  /home/${USER}/DDRL4NAV
 ```
 
 #### Redis
@@ -37,7 +37,7 @@ make sure your python version >= 3.8. (ubuntu20.04 bring it already)
 **third**: create venv
 
 ```
-cd /home/${USER}/drlnav_frame
+cd /home/${USER}/DDRL4NAV
 pip3 install --user virtualenv
 python3.8 -m virtualenv venv38
 
@@ -66,17 +66,13 @@ Notion: if you see False in your python console, just fit in pytorch version wit
 now , the whole project dir tree like this:
 
 ```sh
--drlnav_frame
-​    -drlnav_frame-tools
-​         -redis
-​         -python3	
-​         -README.md
+-DDRL4NAV
 ​    -venv38
 ```
 
 ### Quick Start
 
-supposed you are in /home/${USER}/drlnav_frame dir
+supposed you are in /home/${USER}/DDRL4NAV dir
 
 ```
 git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
@@ -85,15 +81,11 @@ git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
 now , the whole project dir tree like this:
 
 ```sh
--drlnav_frame
-​    -drlnav_frame
+-DDRL4NAV
+​    -DDRL4NAV
 ​         -USTC_lab
 ​         -sh
 ​         -requirements.txt
-​         -README.md
-​    -drlnav_frame-tools
-​         -redis
-​         -python3	
 ​         -README.md
 ​    -venv38
 ```
@@ -105,9 +97,9 @@ If you want to run robot navigation, you should also look [nav_env guide](https:
 **Notion: make sure to check USER in sh/config.sh**
 
 ```
-cd /home/${USER}/drlnav_frame/drlnav_frame/sh
+cd /home/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash start_redis.sh
-bash start.sh
+bash start.sh config/config.sh
 ```
 
 open tensorboard page :
@@ -148,7 +140,7 @@ you should have modify personal branch **in your working machine**
 git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
 git checkout -b XXX
 
-deploy config.sh
+deploy config/config.sh
 
 modify sh/machines/all.sh
 
@@ -163,23 +155,23 @@ first time
 
 ```
 USER=qiuqc # Notion: input your name here
-mkdir -p /home/drl/{USER}/drlnav_frame; cd /home/drl/${USER}/drlnav_frame
-git clone -b ${USER} git@git.ustc.edu.cn:drl_navigation/drlnav_frame.git
+mkdir -p /home/drl/{USER}/DDRL4NAV; cd /home/drl/${USER}/DDRL4NAV
+git clone -b ${USER} git@git.ustc.edu.cn:drl_navigation/DDRL4NAV.git
 ```
 
 then execute pull.sh to pull latest code in workers
 
 ```
-cd /home/drl/${USER}/drlnav_frame/drlnav_frame/sh
+cd /home/drl/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash pull.sh
 ```
 
 **third**: start
 
 ```
-cd /home/drl/${USER}/drlnav_frame/drlnav_frame/sh
+cd /home/drl/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash start_redis.sh
-bash start.sh remote
+bash start.sh config/config.sh remote
 ```
 
 finally, open tensorboard then stop training if necessary
@@ -193,13 +185,13 @@ Jump Server file tree
 -home
   -drl
     -UserA
-      -drlnav_frame
-        -drlnav_frame
-        -output
+      -DDRL4NAV
+        -DDRL4NAV
+          -output
     -UserB
-      -drlnav_frame
-        -drlnav_frame
-        -output
+      -DDRL4NAV
+        -DDRL4NAV
+          -output
 ```
 
 ### [Jump Server](https://zh.wikipedia.org/wiki/%E8%B7%B3%E6%9D%BF%E6%9C%BA)/跳板机
