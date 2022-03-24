@@ -6,6 +6,7 @@ from torch import nn
 import torch.nn.functional as F
 
 from USTC_lab.nn import PreNet
+from USTC_lab.nn import mlp
 import logging
 
 class NavPreNet(PreNet):
@@ -17,8 +18,9 @@ class NavPreNet(PreNet):
         self.conv1 = torch.nn.Conv2d(image_channel, 64, 3, stride=1, padding=(1,1))
         self.conv2 = torch.nn.Conv2d(64, 128, 3, stride=1, padding=(1,1))
         self.conv3 = torch.nn.Conv2d(128, 256, 3, stride=1, padding=(1,1))
-        self.fc0 = nn.Linear(256 * 6 * 6, 512)
-        self.fc1 = nn.Linear(512 + 9, 512)
+        self.fc0 = mlp([ (256 * 6 * 6, 512, "relu")])
+        # self.fc1 = nn.Linear(512 + 9, 512)
+        self.fc1 = mlp([ (512 + 9, 512, "relu")])
         self.fc2 = nn.Linear(512, 512)
         # self.fc3 = nn.Linear(512, 512)
         # assert self.fc2.out_features == last_output_dim
@@ -49,9 +51,12 @@ class NavPedPreNet(PreNet):
         self.conv1 = torch.nn.Conv2d(image_channel, 64, 3, stride=1, padding=(1,1))
         self.conv2 = torch.nn.Conv2d(64, 128, 3, stride=1, padding=(1,1))
         self.conv3 = torch.nn.Conv2d(128, 256, 3, stride=1, padding=(1,1))
-        self.fc0 = nn.Linear(256 * 6 * 6, 512)
-        self.fc1 = nn.Linear(512 + 9, 512)
+        # self.fc0 = nn.Linear(256 * 6 * 6, 512)
+        self.fc0 = mlp([ (256 * 6 * 6, 512, "relu")])
+        # self.fc1 = nn.Linear(512 + 9, 512)
+        self.fc1 = mlp([ (512 + 9, 512, "relu")])
         self.fc2 = nn.Linear(512, 512)
+
         # self.fc3 = nn.Linear(512, 512)
         # assert self.fc2.out_features == last_output_dim
 
