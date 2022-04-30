@@ -4,7 +4,7 @@
 
 We reproduce a light RL training framework from [OpenAi Five](https://arxiv.org/abs/1912.06680). As seen in the following, the structure of our framework is totally the same as the paper shown. 3 key ingredients in the RL training process, Forward Module, Backward Module, and Env Module are separated.
 
-![image-20220128203623248](png/README.assets/image-20220128203623248.png)
+![image-20220128203623248](png/README.assets/frame.png)
 
 
 
