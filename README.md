@@ -4,7 +4,7 @@
 
 We reproduce a light RL training framework from [OpenAi Five](https://arxiv.org/abs/1912.06680). As seen in the following, the structure of our framework is totally the same as the paper shown. 3 key ingredients in the RL training process, Forward Module, Backward Module, and Env Module are separated.
 
-![image-20220128203623248](png/README.assets/image-20220128203623248.png)
+![image-20220128203623248](png/README.assets/frame.png)
 
 
 
@@ -16,7 +16,7 @@ initialize your working directory in the beginning
 
 ```
 chsh -s /bin/bash    # make sure you are in a bash-based terminal
-sudo mkdir -p  /home/${USER}/drlnav_frame
+sudo mkdir -p  /home/${USER}/DDRL4NAV
 ```
 
 #### Redis
@@ -24,50 +24,20 @@ sudo mkdir -p  /home/${USER}/drlnav_frame
 **if you have not installed redis-6.x yet,  please type the following command in your terminal** 
 
 ```
-cd /home/${USER}/drlnav_frame
-git clone git@git.ustc.edu.cn:drl_navigation/drlnav_frame-tools.git
-cd drlnav_frame-tools
-sudo tar -xzvf redis/redis-6.2.1.tar.gz -C /usr/local/
-sudo ln -s /usr/local/redis-6.2.1/src/redis-server /usr/bin/redis-server
+wget https://download.redis.io/releases/redis-6.2.6.tar.gz
+sudo tar -xzvf redis/redis-6.2.6.tar.gz -C /usr/local/
+sudo ln -s /usr/local/redis-6.2.6/src/redis-server /usr/bin/redis-server
 sudo apt install redis-tools
 ```
 
 #### Python3.8
+make sure your python version >= 3.8. (ubuntu20.04 bring it already)
 
-**if you have not installed python3.7+ yet,  please type the following command in your terminal**
-
-**Otherwise, goto the third command directly**
-
-**first**: we need to fix the **_ctype** error for python3.7 +
-
-ubuntu:
-
-```py
-sudo apt-get install libffi-dev
-```
-
-centos
-
-```py
-yum install libffi-devel
-```
-if you are in ubuntu20.04, pass second.
-
-**second** :configure python3.8
-
-```
-cd drlnav_frame-tools
-sudo tar -xzvf python3/Python-3.8.4.tgz -C /usr/local/
-cd /usr/local/Python-3.8.4
-./configure
-make -j4
-sudo make install
-```
 
 **third**: create venv
 
 ```
-cd /home/${USER}/drlnav_frame
+cd /home/${USER}/DDRL4NAV
 pip3 install --user virtualenv
 python3.8 -m virtualenv venv38
 
@@ -96,34 +66,26 @@ Notion: if you see False in your python console, just fit in pytorch version wit
 now , the whole project dir tree like this:
 
 ```sh
--drlnav_frame
-​    -drlnav_frame-tools
-​         -redis
-​         -python3	
-​         -README.md
+-DDRL4NAV
 ​    -venv38
 ```
 
 ### Quick Start
 
-supposed you are in /home/${USER}/drlnav_frame dir
+supposed you are in /home/${USER}/DDRL4NAV dir
 
 ```
-git clone git@git.ustc.edu.cn:drl_navigation/drlnav_frame.git --recurse-submodules
+git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
 ```
 
 now , the whole project dir tree like this:
 
 ```sh
--drlnav_frame
-​    -drlnav_frame
+-DDRL4NAV
+​    -DDRL4NAV
 ​         -USTC_lab
 ​         -sh
 ​         -requirements.txt
-​         -README.md
-​    -drlnav_frame-tools
-​         -redis
-​         -python3	
 ​         -README.md
 ​    -venv38
 ```
@@ -135,15 +97,15 @@ If you want to run robot navigation, you should also look [nav_env guide](https:
 **Notion: make sure to check USER in sh/config.sh**
 
 ```
-cd /home/${USER}/drlnav_frame/drlnav_frame/sh
+cd /home/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash start_redis.sh
-bash start.sh
+bash start.sh config/config.sh
 ```
 
 open tensorboard page :
 
 ```
-bash tfboard.sh 
+bash tfboard.sh config/config.sh
 ```
 
 stop training
@@ -152,7 +114,7 @@ stop training
 # warmly stop
 bash stop.sh
 # or you can just kill them
-bash kill_all.sh
+ps -ef|grep main.py|grep -v grep|awk '{print $2}'|xargs kill -9
 ```
 ### Connection between Env and Net
 For training a neural network, you have to pick some kinds of states which observed by your env.
@@ -162,6 +124,7 @@ Actor and Critic later.
 
 
 ### Distributed Training Start
+Make a Jump Server first.
 
 **first**: connect to [Jump Server](https://zh.wikipedia.org/wiki/%E8%B7%B3%E6%9D%BF%E6%9C%BA)
 
@@ -174,16 +137,16 @@ Actor and Critic later.
 you should have modify personal branch **in your working machine**
 
 ```
-git clone git@git.ustc.edu.cn:drl_navigation/drlnav_frame.git
-git checkout -b qiuqc
+git clone git@github.com:DRL-Navigation/DDRL4NAV.git --recurse-submodules
+git checkout -b XXX
 
-deploy config.sh
+deploy config/config.sh
 
 modify sh/machines/all.sh
 
 modify sh/envs/XX.sh  # XX.sh setting in sh/config.sh
 
-git push origin qiuqc:qiuqc
+git push origin XXX:XXX
 ```
 
 **In Jump Server**
@@ -192,23 +155,23 @@ first time
 
 ```
 USER=qiuqc # Notion: input your name here
-mkdir -p /home/drl/{USER}/drlnav_frame; cd /home/drl/${USER}/drlnav_frame
-git clone -b ${USER} git@git.ustc.edu.cn:drl_navigation/drlnav_frame.git
+mkdir -p /home/drl/{USER}/DDRL4NAV; cd /home/drl/${USER}/DDRL4NAV
+git clone -b ${USER} git@git.ustc.edu.cn:drl_navigation/DDRL4NAV.git
 ```
 
 then execute pull.sh to pull latest code in workers
 
 ```
-cd /home/drl/${USER}/drlnav_frame/drlnav_frame/sh
+cd /home/drl/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash pull.sh
 ```
 
 **third**: start
 
 ```
-cd /home/drl/${USER}/drlnav_frame/drlnav_frame/sh
+cd /home/drl/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash start_redis.sh
-bash start.sh remote
+bash start.sh config/config.sh remote
 ```
 
 finally, open tensorboard then stop training if necessary
@@ -222,13 +185,13 @@ Jump Server file tree
 -home
   -drl
     -UserA
-      -drlnav_frame
-        -drlnav_frame
-        -output
+      -DDRL4NAV
+        -DDRL4NAV
+          -output
     -UserB
-      -drlnav_frame
-        -drlnav_frame
-        -output
+      -DDRL4NAV
+        -DDRL4NAV
+          -output
 ```
 
 ### [Jump Server](https://zh.wikipedia.org/wiki/%E8%B7%B3%E6%9D%BF%E6%9C%BA)/跳板机

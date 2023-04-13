@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-source config.sh
+source "$1"
 source machines/all.sh
-if [ "$1" == "remote" ];
+if [ "$2" == "remote" ];
 then
     file="/home/drl/${USER}/"
 else
@@ -11,7 +11,7 @@ else
 fi
 tfboard_dir="${file}${OUTPUT_DIR}/${TASK_NAME}/tfboard/"
 echo $tfboard_dir
-if [ "$1" == "remote" ];
+if [ "$2" == "remote" ];
 then
     for ENV_MACHINE in ${ENV_MACHINES};
     do
