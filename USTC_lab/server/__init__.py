@@ -8,4 +8,4 @@
 
 from USTC_lab.server.utils import *
 from USTC_lab.server.forward import ForwardThread
-from USTC_lab.server.backward import BackwardThread
+from USTC_lab.server.backward import BackwardTrainThread, BackwardGetDataThread, BackwardQueue

@@ -85,7 +85,7 @@ class Experience:
             yield Experience(*tmp)
 
     @classmethod
-    def batch_data(cls, exps: List["Experience"]) -> Generator["Experience", None, None]:
+    def batch_data_gene(cls, exps: List["Experience"]) -> Generator["Experience", None, None]:
         """batch all of agents' data
         following 64, is for cache, if not, to large numpy data will in error.
         set 128 258 also ok.
@@ -93,7 +93,7 @@ class Experience:
         length = len(exps)
         index = 0
         while index < length:
-            bexp = Experience._batch_data(exps=exps[index: index+64], clean=False)
+            bexp = Experience.batch_data(exps=exps[index: index+64], clean=False)
             index += 64
             yield bexp
 
@@ -114,7 +114,7 @@ class Experience:
         return [each_state[index] for each_state in states]
 
     @classmethod
-    def _batch_data(cls, exps: List["Experience"], clean: bool = True) -> "Experience":
+    def batch_data(cls, exps: List["Experience"], clean: bool = True) -> "Experience":
         '''
             if you concatenate step by step, it's very slow.
             batch all of training data at once

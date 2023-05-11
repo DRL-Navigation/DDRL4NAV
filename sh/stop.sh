@@ -1,7 +1,7 @@
 #!/bin/bash
-source "$2"
+source ./config.sh
 source ${REDIS_FILE}
-if [ "$2" == "remote" ];
+if [ "$1" == "remote" ];
 then
     root_dir="/home/drl/${USER}/"
 else

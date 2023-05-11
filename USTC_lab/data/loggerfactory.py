@@ -50,7 +50,9 @@ class PpoBackwardLogger(LoggerFactory):
         self.logger_class = [PpoTotalLossLogger, ActorLossLogger, VLossLogger, EntLossLogger, PpoBackUpTimeLogger,
                              RNDLossLogger, RNDBackupTimeLogger,
                              ReducedRewardLogger, ReducedReachRateLogger, ReducedStaticObsCollisionRateLogger, ReducedPedCollisionRateLogger, ReducedOtherRobotCollisionRateLogger,
-                             ReducedAngularVelocityEpisodeLogger, ReducedLinearVelocityEpisodeLogger, ReducedStepsEpisodeLogger]
+                             ReducedOpenAreaAngularVelocityEpisodeLogger, ReducedOpenAreaLinearVelocityEpisodeLogger, ReducedStepsEpisodeLogger,
+                             ReducedCloseHumanLinearVelocityEpisodeLogger, ReducedCloseHumanAngularVelocityEpisodeLogger,
+                             ReducedLinearVelocityEpisodeLogger, ReducedAngularVelocityEpisodeLogger]
         super(PpoBackwardLogger, self).__init__(**kwargs)
 
 
@@ -66,6 +68,8 @@ class AgentLogger(LoggerFactory):
     def __init__(self, **kwargs):
         self.logger_class = [RewardEpisodeLogger, TrajectoryTimeLogger, DRewardEpisodeLogger, DRewardStepLogger, RndRewardStepLogger,
                              ReachRateEpisodeLogger, StaticObsCollisionRateEpisode, PedCollisionRateEpisode, OtherRobotCollisionRateEpisode,
+                             OpenAreaLinearVelocityEpisodeLogger, OpenAreaAngularVelocityEpisodeLogger,
+                             CloseHumanLinearVelocityEpisodeLogger, CloseHumanAngularVelocityEpisodeLogger,
                              LinearVelocityEpisodeLogger, AngularVelocityEpisodeLogger]
 
         super(AgentLogger, self).__init__(**kwargs)

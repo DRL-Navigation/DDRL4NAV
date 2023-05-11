@@ -84,7 +84,7 @@ def create_net(configs) -> Basenn:
                                   last_input_dim=config_nn.AC_INPUT_DIM,
                                   pre=pre_critic)
             prenet = None
-    elif config.TASK_TYPE == "robot_nav":
+    elif config.TASK_TYPE in ["robot_nav", "gazebo_env", "real_env"]:
         if config_nn.SHARE_CNN_NET:
             actor, critic = config_nn.ACTOR_CLASS(action_output_dim=config_nn.ACTION_OUTPUT_DIM,
                                                   device=config_nn.DEVICE,
@@ -103,13 +103,12 @@ def create_net(configs) -> Basenn:
             else:
                 prenet = NavPreNet(image_channel=config_env["image_batch"], last_output_dim=config_nn.AC_INPUT_DIM)
         else:
-            if config_env['ped_sim']['total'] > 0:
-                pre_actor = NavPedPreNet(image_channel=config_env["image_batch"]+3, last_output_dim=config_nn.AC_INPUT_DIM)
-                pre_critic = NavPedPreNet(image_channel=config_env["image_batch"]+3, last_output_dim=config_nn.AC_INPUT_DIM)
-            else:
-                pre_actor = NavPreNet(image_channel=config_env["image_batch"], last_output_dim=config_nn.AC_INPUT_DIM)
-                pre_critic = NavPreNet(image_channel=config_env["image_batch"], last_output_dim=config_nn.AC_INPUT_DIM)
-
+            # pre_actor = NavPedPreNet(image_channel=config_env["image_batch"]+3, last_output_dim=config_nn.AC_INPUT_DIM)
+            # pre_critic = NavPedPreNet(image_channel=config_env["image_batch"]+3, last_output_dim=config_nn.AC_INPUT_DIM)
+            # pre_actor = NavPreNet(image_channel=config_env["image_batch"], last_output_dim=config_nn.AC_INPUT_DIM)
+            # pre_critic = NavPreNet(image_channel=config_env["image_batch"], last_output_dim=config_nn.AC_INPUT_DIM)
+            pre_actor = NavPreNet1D(image_channel=3, last_output_dim=config_nn.AC_INPUT_DIM)
+            pre_critic = NavPreNet1D(image_channel= 3, last_output_dim=config_nn.AC_INPUT_DIM)
             actor, critic = config_nn.ACTOR_CLASS(action_output_dim=config_nn.ACTION_OUTPUT_DIM,
                                                   device=config_nn.DEVICE,
                                                   soft_max_grid=config_nn.SOFT_MAX_GRID,

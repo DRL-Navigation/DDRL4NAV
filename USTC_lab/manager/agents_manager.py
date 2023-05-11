@@ -119,14 +119,14 @@ class AgentsManager(Manager):
                 self.tasks[i].render = 0
     
     def _make_vec_env(self):
-        envs = [make_env(self.config_env) for i in range(self.config_env.get('batch_num', 1))]
+        envs = [make_env(self.config_env) for i in range(self.config_env.get('batch_num_per_env', 1))]
         # envs = make_env(self.config_env)
         vector_envs = make_vecenv(envs)
         
         return vector_envs
     
     def add_tasks(self, net_type: str = "ppo"):
-        process_env_id: str = self.config.MACHINE_IP + "_" + str(len(self.tasks))
+        process_env_id: str = self.config.MACHINE_IP + "_" + str(self.config_env["node_id"])
         # TODO 直接传进去一个构造好的env
         self.tasks.append(Agents(process_env_id=process_env_id,
                                  logger=self.logc.add_logger('agent'),

@@ -99,13 +99,13 @@ If you want to run robot navigation, you should also look [nav_env guide](https:
 ```
 cd /home/${USER}/DDRL4NAV/DDRL4NAV/sh
 bash start_redis.sh
-bash start.sh config/config.sh
+bash start.sh 
 ```
 
 open tensorboard page :
 
 ```
-bash tfboard.sh config/config.sh
+bash tfboard.sh 
 ```
 
 stop training

@@ -26,9 +26,9 @@ class NavPreNet(PreNet):
         # assert self.fc2.out_features == last_output_dim
 
     def _encode_image(self, image):
-        image_x = F.max_pool2d(F.relu(self.conv1(image)), 2, stride=2)
-        image_x = F.max_pool2d(F.relu(self.conv2(image_x)), 2, stride=2)
-        image_x = F.max_pool2d(F.relu(self.conv3(image_x)), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv1(image), inplace=True), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv2(image_x), inplace=True), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv3(image_x), inplace=True), 2, stride=2)
         image_x = image_x.view(image_x.size(0), -1)
         return image_x
 
@@ -41,6 +41,7 @@ class NavPreNet(PreNet):
         x = self.fc2(x)
         # x = self.fc3(x)
         return x
+
 
 class NavPedPreNet(PreNet):
     def __init__(self,
@@ -61,9 +62,9 @@ class NavPedPreNet(PreNet):
         # assert self.fc2.out_features == last_output_dim
 
     def _encode_image(self, image):
-        image_x = F.max_pool2d(F.relu(self.conv1(image)), 2, stride=2)
-        image_x = F.max_pool2d(F.relu(self.conv2(image_x)), 2, stride=2)
-        image_x = F.max_pool2d(F.relu(self.conv3(image_x)), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv1(image), inplace=True), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv2(image_x), inplace=True), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv3(image_x), inplace=True), 2, stride=2)
         image_x = image_x.view(image_x.size(0), -1)
         return image_x
 
@@ -76,6 +77,57 @@ class NavPedPreNet(PreNet):
         x = self.fc2(x)
         # x = self.fc3(x)
         return x
+
+
+class NavPreNet1D(PreNet):
+    def __init__(self,
+                 image_channel=1,
+                 last_output_dim=512,
+                 ):
+        super(NavPreNet1D, self).__init__()
+        self.conv1 = torch.nn.Conv2d(image_channel, 64, 7, stride=1, padding=(1,1))
+        self.conv2 = torch.nn.Conv2d(64, 128, 5, stride=1, padding=(1,1))
+        self.conv3 = torch.nn.Conv2d(128, 256, 3, stride=1, padding=(1,1))
+
+        self.conv1d1 =  torch.nn.Conv1d(1, 32, 5, 2, "valid")
+        self.conv1d2 =  torch.nn.Conv1d(32, 32, 3, 2, "valid")
+        self.fc_1d = mlp([ (7616, 256, "relu")])
+        self.fc0 = mlp([ (6400, 512, "relu")])
+        self.fc1 = mlp([ (256+ 512 + 5, 512, "relu")])
+        self.fc2 = nn.Linear(512, 512)
+
+    def _encode_image(self, image):
+        image_x = F.max_pool2d(F.relu(self.conv1(image), inplace=True), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv2(image_x), inplace=True), 2, stride=2)
+        image_x = F.max_pool2d(F.relu(self.conv3(image_x), inplace=True), 2, stride=2)
+        # print(image_x.shape)
+        image_x = image_x.view(image_x.size(0),-1)
+        return image_x
+
+    def _encode_laser(self,x ):
+
+        x = self.conv1d1(x)
+        x = self.conv1d2(x)
+        x = self.fc_1d(x.view(x.shape[0], -1))
+
+        return x
+
+    def forward(self, state):
+        encoded_image_laser = self._encode_laser(state[0])
+        encoded_image_ped = self._encode_image(state[2])
+        # encoded_image = self._encode_image(state[0])
+        # sarl_v = self._net(state[-2])
+        x = self.fc0(encoded_image_ped)
+        # x = torch.cat((x, state[1], self.encode_shape_vector(state[-1])), dim=1)
+        x = torch.cat((encoded_image_laser, x, state[1]), dim=1)
+
+        # x = state[1]
+        x = self.fc1(x)
+        x = self.fc2(x)
+        # x = self.fc3(x)
+        return x
+
+
 if __name__ == "__main__":
     net = NavPreNet(1,9)
     opt = torch.optim.Adam(

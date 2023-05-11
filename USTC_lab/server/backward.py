@@ -8,34 +8,78 @@ network backup
 import time
 import torch
 import redis
+import numpy as np
+
 from threading import Thread
 from multiprocessing import Value
 from multiprocess.context import Process
 from collections import defaultdict
+from multiprocessing import Queue as MultiQueue
+from multiprocessing import Value
+from typing import *
 
 from USTC_lab.data import Experience
 from USTC_lab.data import LoggerFactory, EasyBytes
 from USTC_lab.nn import Basenn
 from USTC_lab.data import MimicExpFactory
 
+
 def avg(x):
     return sum(x) / len(x)
 
 
+def batch_logger( p: List[Dict]) -> Dict:
+    if len(p) == 0: return {}
+    o = {}
+    for key in p[0]:
+        t = []
+        for j in p:
+            t.append(j[key])
+        o[key] = float(np.mean(t))
+    return o
+
+
+class BackwardQueue:
+    def __init__(self):
+        super(BackwardQueue, self).__init__()
+
+        self.q = MultiQueue()
+
+    def get(self, batch_size, *args) -> Tuple[Experience, Dict]:
+        cur_size = 0
+        list_exp: List[Experience] = []
+        list_dict: List[dict] = []
+        while cur_size < batch_size:
+            data, dict_logger = self.q.get(*args)
+            assert isinstance(data, Experience)
+            assert isinstance(dict_logger, dict)
+            cur_size += len(data)
+            list_exp.append(data)
+            if len(dict_logger):
+                list_dict.append(dict_logger)
+        exp = Experience.batch_data(list_exp)
+        batched_dict_logger = batch_logger(list_dict)
+        return exp, batched_dict_logger
+
+    def put(self, data: Tuple[Experience, Dict], *args) -> None:
+        self.q.put(data, *args)
+
 
 class BackwardThread(Thread):
-    def __init__(self, net: Basenn,
+    def __init__(self,
+                 net: Basenn,
+                 training_data_queue: BackwardQueue,
                  trainer_id: int,
                  logger: LoggerFactory,
                  easy_bytes: EasyBytes,
                  exit_flag: Value,
-                 configs
-                 ):
+                 configs):
         super(BackwardThread, self).__init__()
         # self.setDaemon(True)
         config, config_nn = configs['config'], configs['config_nn']
 
         self.net = net
+        self.training_data_queue = training_data_queue
         self.easy_bytes = easy_bytes
         self.conn_train = redis.Redis(config.TRAINER_REDIS_HOST,
                                       config.TRAINER_REDIS_PORT)
@@ -77,12 +121,11 @@ class BackwardThread(Thread):
                                                           config_nn.IMITATION_TRAINING_TYPE)
             self.imitation_learning_dict = {
                 "imitation_learning_rate": config_nn.IMITATION_LEARINING_RATE,
-                "imitation_training_batch" : config_nn.IMITATION_TRAINING_BATCH,
-                "imitation_training_epoch" : config_nn.IMITATION_TRAINING_EPOCH,
-                "imitation_saving_frequency" : config_nn.IMITATION_SAVING_FREQUENCY,
+                "imitation_training_batch": config_nn.IMITATION_TRAINING_BATCH,
+                "imitation_training_epoch": config_nn.IMITATION_TRAINING_EPOCH,
+                "imitation_saving_frequency": config_nn.IMITATION_SAVING_FREQUENCY,
                 "imitation_model_key": config.TASK_NAME + config.IMITATION_MODEL_KEY,
                 "imitation_training_type": config_nn.IMITATION_TRAINING_TYPE,
-
             }
 
         self.load_checkpoint_path = None
@@ -94,16 +137,28 @@ class BackwardThread(Thread):
         self.sync = config.SYNC
         self.test = config.TEST
 
-    def get_train_data(self) -> Experience:
+
+class BackwardGetDataThread(BackwardThread):
+    def __init__(self, *args, **kwargs):
+        super(BackwardGetDataThread, self).__init__(*args, **kwargs)
+
+    def get_train_data(self):
         batch_bytes = self.conn_train.brpop(self.data_key, timeout=self.timeout * 3)[1]
         self.conn_middle.set(self.train_lock_key, 1)
         list_np_states, list_np_other4, dict_logger = self.easy_bytes.decode_backward_data(batch_bytes)
         exp_data = Experience(list_np_states, *list_np_other4)
-        exp_data.to_tensor(dtype=self.tensortype, device=self.device)
 
-        self.data_len += len(exp_data)
-        self.update_envstats_logger(dict_logger)
-        return exp_data
+        self.training_data_queue.put( (exp_data, dict_logger) )
+
+    def run(self) -> None:
+        while self.exit_flag.value == b'0':
+            # get training data from message queue and put them in ProcessQueue.
+            self.get_train_data()
+
+
+class BackwardTrainThread(BackwardThread):
+    def __init__(self, *args, **kwargs):
+        super(BackwardTrainThread, self).__init__(*args, **kwargs)
 
     def update_envstats_logger(self, dict_logger):
         for k, v in dict_logger.items():
@@ -124,8 +179,12 @@ class BackwardThread(Thread):
         self.net.nn2redis(self.pipe_middle, self.update_tag)
         while self.exit_flag.value == b'0':
             s = time.time()
-            train_data: Experience = self.get_train_data()
-            print("get training data ", time.time() - s)
+            train_data, dict_logger = self.training_data_queue.get(self.min_batch_size)
+            train_data.to_tensor(dtype=self.tensortype, device=self.device)
+            self.data_len += len(train_data)
+            print("get training data ", time.time() - s, flush=True)
+            self.update_envstats_logger(dict_logger=dict_logger)
+
             if self.test: continue
             for loss_items, update_time, last in self.net.learn(train_data):
                 update_time += self.load_checkpoint_start

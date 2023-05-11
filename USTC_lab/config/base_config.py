@@ -50,7 +50,7 @@ class BaseConfig:
 
     # Load old models. Throws if the model doesn't exist
     LOAD_CHECKPOINT = False
-    LOAD_CHECKPOINT_PATH = "/home/drl/drlnav_frame/output/SpaceInvaders-v4-clip-gail_v3/model/_62000.pt"
+    LOAD_CHECKPOINT_PATH = "/home/ustc/qiuqc/drlnav_master/drlnav_frame/output/robotnav_ped-10obs-5ped-noignore-0.4hz/model/_36000.pt"#"/home/ustc/qiuqc/drlnav_master/drlnav_frame/output/robotnav_test_0.1_hz-2max_acc-15obs-2wacc/model/_20000.pt"#"/home/ustc/qiuqc/drlnav_master/drlnav_frame/output/robotnav_test_0.1_hz-2max_acc-15obs/model/_48000.pt"
     # If 0, the latest checkpoint is loaded
     LOAD_EPISODE = 62000
 

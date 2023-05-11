@@ -119,8 +119,11 @@ class Agents(Process):
         self.dones = np.stack(_dones)
 
         self.start_score = 0
+        self.is_training: bool = not config.TEST
 
     def _accumulate_rewards(self, experiences: List[Experience], rewards_step: np.ndarray) -> List[Experience]:
+        if len(experiences) == 0:
+            return []
         # rewards_sum: [rewards_num_dim, all_num]
         rewards_sum = np.zeros_like(rewards_step[0], dtype=self.model_dtype)
         # next_v: [values_num_dim, all_num]
@@ -137,6 +140,8 @@ class Agents(Process):
         return experiences[:-1]
 
     def _accumulate_tempo_rewards(self, experiences: List[Experience]) -> List[Experience]:
+        if len(experiences) == 0:
+            return []
         # rewards_sum: [rewards_num_dim, all_num]
         rewards_sum = np.zeros_like(experiences[0].rewards, dtype=self.model_dtype)
         # next_v: [values_num_dim, all_num]
@@ -258,15 +263,15 @@ class Agents(Process):
                 # follow rnd trick, do not consider episode dones
                 rewards_step[time_step][-1] = data[-1]
 
-            exps.append(Experience(states=states,
+            if self.is_training:
+                exps.append(Experience(states=states,
                                    actions=actions,
                                    durations=self._get_durations(info),
                                    rewards=rewards_step[time_step],
                                    old_logps=old_logps,
                                    dones=deepcopy(self.dones),
                                    values=values,
-                                   is_clean=info.get('is_clean')),
-                        )
+                                   is_clean=info.get('is_clean')))
             if time_step == self.T:
                 # cal the discounted reward
                 if self.config_env.get('is_temporl')!=None:
@@ -277,12 +282,13 @@ class Agents(Process):
                 # Q: why batch?
                 # A: beacause there are more than one agents in our environments.
                 # Avoid data too large, yield pieces of bexp
-                bexp_gen = Experience.batch_data(updated_exps)
+                bexp_gen = Experience.batch_data_gene(updated_exps)
                 yield bexp_gen, \
                       rewards_step,
 
                 rewards_step[0] = rewards_step[self.T]
-                exps = [exps[-1]]
+                if len(exps) > 0:
+                    exps = [exps[-1]]
                 time_step = 0
 
             # Drewards_sum *= (1 - dones)
@@ -316,6 +322,8 @@ class Agents(Process):
                     # self.status.update_trajectory_steps_logger(steps=steps, int_process_env_id=self.int_process_env_id, config_env=self.config_env)
                     self.status.update_reach_logger(steps=steps, int_process_env_id=self.int_process_env_id, config_env=self.config_env)
                     self.status.update_collision_logger(steps=steps, int_process_env_id=self.int_process_env_id, config_env=self.config_env)
+                    if self.config_env['ped_sim']['total'] > 0:
+                        self.status.update_ped_relation_velocity_logger(steps=steps, int_process_env_id=self.int_process_env_id, config_env=self.config_env)
 
                 if self.network_type in ['gail', ]:
                     Drewards_step = rewards_step[:, -1, :]

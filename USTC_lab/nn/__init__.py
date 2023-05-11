@@ -13,7 +13,7 @@ from USTC_lab.nn.actor import CategoricalActor, Actor, GaussionActor
 from USTC_lab.nn.RND import RND
 from USTC_lab.nn.ppo import PPO
 from USTC_lab.nn.GAIL import GAIL, Discriminator
-from USTC_lab.nn.nav_encoder import NavPreNet, NavPedPreNet
+from USTC_lab.nn.nav_encoder import NavPreNet, NavPedPreNet, NavPreNet1D
 from USTC_lab.nn.atari_encoder import AtariPreNet
 from USTC_lab.nn.mlp_encoder import MLPPreNet
 NETWORK_MAP = {
@@ -37,6 +37,7 @@ __all__ = [
     "RND",
     "mlp",
     "merge",
-    "NavPedPreNet"
+    "NavPedPreNet",
+    "NavPreNet1D",
 
 ]

@@ -1,12 +1,12 @@
 #!/bin/bash
 
 
-source "$1"
+source config.sh
 source machines/all.sh
 
 
 
-if [ "$2" == "remote" ];
+if [ "$1" == "remote" ];
 then
     file="/home/drl/${USER}/"
 else
@@ -15,7 +15,7 @@ fi
 pid_dir="${file}${OUTPUT_DIR}/${TASK_NAME}/pid/"
 
 
-if [ "$2" == "remote" ];
+if [ "$1" == "remote" ];
 then
     for ENV_MACHINE in ${ENV_MACHINES};
     do

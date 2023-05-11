@@ -7,7 +7,7 @@ localhost
 "
 
 ENV_FILES="
-circle.sh
+simulation/hard_baseline.sh
 "
 
 TRI_MACHINES="

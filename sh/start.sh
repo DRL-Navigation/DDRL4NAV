@@ -1,12 +1,12 @@
 #!/bin/bash
 
+source ../USTC_lab/env/img_env/devel/setup.sh
 
-
-source "$1"
+source config.sh
 
 source ${MACHINE_FILE}
 source ${REDIS_FILE}
-if [ "$2" == "remote" ];
+if [ "$1" == "remote" ];
 then
     root_dir="/home/drl/${USER}/"
 else

@@ -97,8 +97,8 @@ class TrainingProcess(QueueProcess):
             else:
                 print("something unknown object flow into training pipleine. the type is", type(c))
                 raise ValueError
-            if cur_size >= self.min_batch:
-                bytes_data = self.easy_bytes.encode_backward_data(Experience._batch_data(t).get_xrapv(), self.batch_logger(p))
+            if cur_size >= 128:
+                bytes_data = self.easy_bytes.encode_backward_data(Experience.batch_data(t).get_xrapv(), self.batch_logger(p))
                 self.conn.lpush(self.key, bytes_data)
                 t.clear()
                 p.clear()
