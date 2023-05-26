@@ -92,7 +92,7 @@ now , the whole project dir tree like this:
 
 now, let's try to train one classical atari game - Pong in your local machine
 
-If you want to run robot navigation, you should also look [nav_env guide](https://git.ustc.edu.cn/drl_navigation/drlnav_env) to run ros node.
+If you want to run robot navigation, you should also look [nav_env guide](https://github.com/DRL-Navigation/img_env) to run ros node.
 
 **Notion: make sure to check USER in sh/config.sh**
 
